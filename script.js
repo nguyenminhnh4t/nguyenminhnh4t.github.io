@@ -168,7 +168,7 @@ const createIntroSlide = () => {
 
   const contact = document.createElement('a');
   contact.className = 'button secondary';
-  contact.href = 'mailto:nguyenminhnh4t@gmail.com';
+  contact.href = 'mailto:nguyennhat2504.nn@gmail.com';
   contact.append(createIcon('M4 6h16v12H4V6Zm0 1 8 6 8-6'), createText('span', '', 'Contact'));
 
   links.append(startButton, contact);
@@ -291,6 +291,13 @@ const handleTouchMove = (event) => {
   goToSlide(currentSlideIndex + (deltaY > 0 ? 1 : -1));
 };
 
+const handleOutsideAppMenu = (event) => {
+  const sidebar = appMenuToggle.closest('.app-sidebar');
+  if (!sidebar.classList.contains('open')) return;
+  if (event.target.closest('.app-sidebar')) return;
+  setAppMenuOpen(false);
+};
+
 const loadApps = async () => {
   try {
     const response = await fetch('apps.json');
@@ -315,6 +322,8 @@ toggle.addEventListener('click', () => {
 appMenuToggle.addEventListener('click', () => {
   setAppMenuOpen(appMenuToggle.getAttribute('aria-expanded') !== 'true');
 });
+document.addEventListener('click', handleOutsideAppMenu);
+document.addEventListener('touchstart', handleOutsideAppMenu, { passive: true });
 window.addEventListener('wheel', handleWheel, { passive: false });
 window.addEventListener('touchstart', handleTouchStart, { passive: true });
 window.addEventListener('touchmove', handleTouchMove, { passive: false });

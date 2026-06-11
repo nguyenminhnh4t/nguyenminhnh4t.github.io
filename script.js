@@ -8,6 +8,8 @@ const storedTheme = localStorage.getItem('portfolio-theme');
 let appsData = [];
 let currentSlideIndex = 0;
 let wheelLocked = false;
+let touchStartY = 0;
+let touchStartX = 0;
 
 const setTheme = (isDark) => {
   document.documentElement.classList.toggle('dark', isDark);
@@ -265,6 +267,24 @@ const handleWheel = (event) => {
   }, 520);
 };
 
+const handleTouchStart = (event) => {
+  if (!event.touches.length) return;
+  touchStartY = event.touches[0].clientY;
+  touchStartX = event.touches[0].clientX;
+};
+
+const handleTouchEnd = (event) => {
+  if (appsData.length === 0 || !event.changedTouches.length) return;
+
+  const touchEndY = event.changedTouches[0].clientY;
+  const touchEndX = event.changedTouches[0].clientX;
+  const deltaY = touchStartY - touchEndY;
+  const deltaX = touchStartX - touchEndX;
+
+  if (Math.abs(deltaY) < 42 || Math.abs(deltaY) < Math.abs(deltaX)) return;
+  goToSlide(currentSlideIndex + (deltaY > 0 ? 1 : -1));
+};
+
 const loadApps = async () => {
   try {
     const response = await fetch('apps.json');
@@ -290,6 +310,8 @@ appMenuToggle.addEventListener('click', () => {
   setAppMenuOpen(appMenuToggle.getAttribute('aria-expanded') !== 'true');
 });
 window.addEventListener('wheel', handleWheel, { passive: false });
+window.addEventListener('touchstart', handleTouchStart, { passive: true });
+window.addEventListener('touchend', handleTouchEnd, { passive: true });
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') setAppMenuOpen(false);
   if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') goToSlide(currentSlideIndex - 1);

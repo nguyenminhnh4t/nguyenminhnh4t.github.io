@@ -124,11 +124,14 @@ a {
   color: var(--ink);
   text-decoration: none;
   font-weight: 720;
-  letter-spacing: -0.02em;
 }
 
-.brand-accent {
-  color: var(--accent);
+.mark-logo {
+  display: block;
+  width: auto;
+  height: 44px;
+  max-width: min(260px, 52vw);
+  object-fit: contain;
 }
 
 .mark-symbol {
@@ -320,15 +323,26 @@ body.dark .theme-icon-sun {
   justify-content: center;
   gap: 8px;
   min-height: 44px;
+  min-width: 118px;
   border-radius: 999px;
   border: 1px solid var(--accent);
   background: var(--accent);
   color: var(--accent-ink);
   padding: 0 18px;
+  font: inherit;
+  font-size: 0.92rem;
   text-decoration: none;
-  font-weight: 750;
-  letter-spacing: -0.01em;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0;
+  cursor: pointer;
   transition: background-color 260ms ease, border-color 260ms ease, color 260ms ease, box-shadow 260ms ease;
+}
+
+.button .icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
 }
 
 .button.secondary {
@@ -776,6 +790,11 @@ body.dark .theme-icon-sun {
     flex-direction: row;
     align-items: center;
     gap: 12px;
+  }
+
+  .mark-logo {
+    height: 36px;
+    max-width: 46vw;
   }
 
   .top-actions {

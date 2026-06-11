@@ -169,7 +169,7 @@ const createIntroSlide = () => {
   const contact = document.createElement('a');
   contact.className = 'button secondary';
   contact.href = 'mailto:nguyennhat2504.nn@gmail.com';
-  contact.append(createIcon('M4 6h16v12H4V6Zm0 1 8 6 8-6'), createText('span', '', 'Contact'));
+  contact.append(createText('span', '', 'Contact'), createIcon('M4 6h16v12H4V6Zm0 1 8 6 8-6'));
 
   links.append(startButton, contact);
   copy.append(links);

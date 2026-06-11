@@ -4,7 +4,7 @@
     "description": "Config-driven browser task runner",
     "url": "https://chromewebstore.google.com/detail/simple-automation-runner/gmefgpimdhaipihoobmjhkjhhhokmodc",
     "label": "Simple Automation Runner",
-    "image": "",
+    "image": "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/extension.png",
     "imageAlt": "Simple Automation Runner preview"
   }
 ]

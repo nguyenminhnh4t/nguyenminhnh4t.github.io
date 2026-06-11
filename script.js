@@ -10,6 +10,7 @@ let currentSlideIndex = 0;
 let wheelLocked = false;
 let touchStartY = 0;
 let touchStartX = 0;
+let touchLocked = false;
 
 const setTheme = (isDark) => {
   document.documentElement.classList.toggle('dark', isDark);
@@ -271,17 +272,22 @@ const handleTouchStart = (event) => {
   if (!event.touches.length) return;
   touchStartY = event.touches[0].clientY;
   touchStartX = event.touches[0].clientX;
+  touchLocked = false;
 };
 
-const handleTouchEnd = (event) => {
-  if (appsData.length === 0 || !event.changedTouches.length) return;
+const handleTouchMove = (event) => {
+  if (appsData.length === 0 || !event.touches.length || touchLocked) return;
+  if (event.target.closest('.app-sidebar')) return;
 
-  const touchEndY = event.changedTouches[0].clientY;
-  const touchEndX = event.changedTouches[0].clientX;
-  const deltaY = touchStartY - touchEndY;
-  const deltaX = touchStartX - touchEndX;
+  const currentY = event.touches[0].clientY;
+  const currentX = event.touches[0].clientX;
+  const deltaY = touchStartY - currentY;
+  const deltaX = touchStartX - currentX;
 
   if (Math.abs(deltaY) < 42 || Math.abs(deltaY) < Math.abs(deltaX)) return;
+
+  event.preventDefault();
+  touchLocked = true;
   goToSlide(currentSlideIndex + (deltaY > 0 ? 1 : -1));
 };
 
@@ -311,7 +317,7 @@ appMenuToggle.addEventListener('click', () => {
 });
 window.addEventListener('wheel', handleWheel, { passive: false });
 window.addEventListener('touchstart', handleTouchStart, { passive: true });
-window.addEventListener('touchend', handleTouchEnd, { passive: true });
+window.addEventListener('touchmove', handleTouchMove, { passive: false });
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') setAppMenuOpen(false);
   if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') goToSlide(currentSlideIndex - 1);

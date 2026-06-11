@@ -1,7 +1,7 @@
 const toggle = document.getElementById('themeToggle');
-const themeLabel = toggle.querySelector('.theme-label');
 const appsGrid = document.getElementById('appsGrid');
 const appList = document.getElementById('appList');
+const appMenuToggle = document.getElementById('appMenuToggle');
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const storedTheme = localStorage.getItem('portfolio-theme');
 
@@ -12,7 +12,6 @@ let wheelLocked = false;
 const setTheme = (isDark) => {
   document.documentElement.classList.toggle('dark', isDark);
   document.body.classList.toggle('dark', isDark);
-  themeLabel.textContent = isDark ? 'Light' : 'Dark';
   toggle.setAttribute('aria-pressed', String(isDark));
   toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
   toggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
@@ -45,21 +44,90 @@ const createIcon = (pathData, label) => {
   return svg;
 };
 
-const createAppMedia = (app) => {
+const createFallbackImageUrl = (app, index) => {
+  const seed = encodeURIComponent(`${app.title || 'app'}-${index + 1}`);
+  return `https://picsum.photos/seed/${seed}/900/1100`;
+};
+
+const getAppImageUrl = (app, index) => {
+  if (app.imageLoadFailed) return '';
+  return app.loadedImage || app.image || createFallbackImageUrl(app, index);
+};
+
+const loadImage = (src) => new Promise((resolve, reject) => {
+  if (!src) {
+    reject(new Error('Missing image source'));
+    return;
+  }
+
+  const image = new Image();
+  image.onload = () => resolve(src);
+  image.onerror = () => reject(new Error(`Could not load image: ${src}`));
+  image.src = src;
+});
+
+const preloadAppImage = async (app, index) => {
+  const fallbackUrl = createFallbackImageUrl(app, index);
+  const primaryUrl = app.image || fallbackUrl;
+
+  try {
+    app.loadedImage = await loadImage(primaryUrl);
+  } catch (error) {
+    if (primaryUrl !== fallbackUrl) {
+      try {
+        app.loadedImage = await loadImage(fallbackUrl);
+      } catch (fallbackError) {
+        console.warn(fallbackError);
+        app.imageLoadFailed = true;
+      }
+      return;
+    }
+
+    console.warn(error);
+    app.imageLoadFailed = true;
+  }
+};
+
+const preloadAppImages = async (apps) => {
+  await Promise.all(apps.map((app, index) => preloadAppImage(app, index)));
+};
+
+const renderLoadingState = () => {
+  appsGrid.replaceChildren();
+  const loading = document.createElement('section');
+  loading.className = 'hero';
+  loading.append(
+    createText('h1', '', 'Loading previews.'),
+    createText('p', 'loading-copy', 'Preparing images before the experience starts.')
+  );
+  appsGrid.append(loading);
+};
+
+const warmBrowserCache = (apps) => {
+  apps.forEach((app, index) => {
+    if (!getAppImageUrl(app, index)) return;
+    const image = new Image();
+    image.src = getAppImageUrl(app, index);
+  });
+};
+
+const createAppMedia = (app, index) => {
   const media = document.createElement('div');
   media.className = 'app-media';
+  const imageUrl = getAppImageUrl(app, index);
 
-  if (app.image) {
-    const image = document.createElement('img');
-    image.src = app.image;
-    image.alt = app.imageAlt || `${app.title || 'App'} preview`;
-    image.loading = 'lazy';
-    media.append(image);
+  if (!imageUrl) {
+    media.classList.add('app-media-empty');
+    media.textContent = (app.title || 'App').trim().slice(0, 2).toUpperCase();
     return media;
   }
 
-  media.classList.add('app-media-empty');
-  media.textContent = (app.title || 'App').trim().slice(0, 2).toUpperCase();
+  const image = document.createElement('img');
+  image.src = imageUrl;
+  image.alt = app.imageAlt || `${app.title || 'App'} preview`;
+  image.loading = 'eager';
+  image.decoding = 'async';
+  media.append(image);
   return media;
 };
 
@@ -143,7 +211,7 @@ const renderCurrentSlide = () => {
   content.className = 'app-detail';
   content.append(meta, title, description, link);
 
-  section.append(createAppMedia(app), content);
+  section.append(createAppMedia(app, appIndex), content);
   appsGrid.append(section);
   setActiveSlide();
 };
@@ -153,6 +221,12 @@ const goToSlide = (index) => {
   if (!total) return;
   currentSlideIndex = Math.max(0, Math.min(index, total - 1));
   renderCurrentSlide();
+  setAppMenuOpen(false);
+};
+
+const setAppMenuOpen = (isOpen) => {
+  appMenuToggle.setAttribute('aria-expanded', String(isOpen));
+  appMenuToggle.closest('.app-sidebar').classList.toggle('open', isOpen);
 };
 
 const createListItem = (label, index) => {
@@ -197,6 +271,9 @@ const loadApps = async () => {
     if (!response.ok) throw new Error('Could not load apps.json');
     appsData = await response.json();
     currentSlideIndex = 0;
+    renderLoadingState();
+    await preloadAppImages(appsData);
+    warmBrowserCache(appsData);
     renderAppList();
     renderCurrentSlide();
   } catch (error) {
@@ -209,8 +286,12 @@ setTheme(storedTheme ? storedTheme === 'dark' : prefersDark);
 toggle.addEventListener('click', () => {
   setTheme(!document.body.classList.contains('dark'));
 });
+appMenuToggle.addEventListener('click', () => {
+  setAppMenuOpen(appMenuToggle.getAttribute('aria-expanded') !== 'true');
+});
 window.addEventListener('wheel', handleWheel, { passive: false });
 window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') setAppMenuOpen(false);
   if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') goToSlide(currentSlideIndex - 1);
   if (event.key === 'ArrowDown' || event.key === 'ArrowRight') goToSlide(currentSlideIndex + 1);
 });

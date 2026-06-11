@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -173,67 +173,72 @@
       <div class="brand">
         <div>
           <span style="font-size:0.95rem; color: var(--accent); letter-spacing:0.2em; text-transform:uppercase;">Landing Page</span>
-          <h1>Apps tôi đã xây dựng</h1>
+            <h1>Apps I Built</h1>
+          </div>
+          <p>A minimal landing page to showcase apps you made. Click each card to open the app link.</p>
         </div>
-        <p>Trang minimal giới thiệu các ứng dụng bạn đã tạo. Click vào mỗi app để truy cập liên kết chạy thử và xem chi tiết.</p>
-      </div>
-      <button class="toggle" id="themeToggle" type="button">Dark mode</button>
-    </header>
+        <button class="toggle" id="themeToggle" type="button">Dark mode</button>
+      </header>
 
-    <section>
-      <p class="section-title">Các app nổi bật</p>
-      <div class="grid">
-        <a class="card" href="#" target="_blank" rel="noopener noreferrer">
-          <h2>App 1: Quản lý tác vụ</h2>
-          <p>Ứng dụng quản lý công việc với giao diện trực quan, hỗ trợ thêm/sửa/xóa và lọc tác vụ theo trạng thái.</p>
-          <span class="meta">Demo</span>
-        </a>
-        <a class="card" href="#" target="_blank" rel="noopener noreferrer">
-          <h2>App 2: Dashboard tài chính</h2>
-          <p>Dashboard hiển thị số liệu tài chính, biểu đồ và báo cáo giúp theo dõi thu chi dễ dàng.</p>
-          <span class="meta">Tham khảo</span>
-        </a>
-        <a class="card" href="#" target="_blank" rel="noopener noreferrer">
-          <h2>App 3: Portfolio cá nhân</h2>
-          <p>Portfolio đơn giản, tập trung vào nội dung và trải nghiệm người xem trên máy tính và mobile.</p>
-          <span class="meta">Xem</span>
-        </a>
-        <a class="card" href="#" target="_blank" rel="noopener noreferrer">
-          <h2>App 4: Hẹn giờ Pomodoro</h2>
-          <p>Công cụ Pomodoro giúp tăng hiệu suất làm việc bằng cách quản lý thời gian nghỉ và làm việc.</p>
-          <span class="meta">Mở</span>
-        </a>
-      </div>
-    </section>
+      <section>
+        <p class="section-title">Featured apps</p>
+        <div class="grid" id="appsGrid">
+          <!-- App cards are loaded from apps.json -->
+        </div>
+      </section>
 
-    <footer>
-      Cập nhật danh sách app của bạn bằng cách sửa lại các tiêu đề và liên kết trong file <strong>index.html</strong>.
-    </footer>
-  </div>
+      <footer>
+        Update the app list by editing <strong>apps.json</strong> and replacing example URLs.
+      </footer>
+    </div>
 
-  <script>
-    const toggle = document.getElementById('themeToggle');
-    const root = document.documentElement;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const storedTheme = localStorage.getItem('portfolio-theme');
+    <script>
+      const toggle = document.getElementById('themeToggle');
+      const appsGrid = document.getElementById('appsGrid');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const storedTheme = localStorage.getItem('portfolio-theme');
 
-    const setTheme = (isDark) => {
-      if (isDark) {
-        document.body.classList.add('dark');
-        toggle.textContent = 'Light mode';
-      } else {
-        document.body.classList.remove('dark');
-        toggle.textContent = 'Dark mode';
-      }
-      localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
-    };
+      const setTheme = (isDark) => {
+        if (isDark) {
+          document.body.classList.add('dark');
+          toggle.textContent = 'Light mode';
+        } else {
+          document.body.classList.remove('dark');
+          toggle.textContent = 'Dark mode';
+        }
+        localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
+      };
 
-    const initialDark = storedTheme ? storedTheme === 'dark' : prefersDark;
-    setTheme(initialDark);
+      const initialDark = storedTheme ? storedTheme === 'dark' : prefersDark;
+      setTheme(initialDark);
 
-    toggle.addEventListener('click', () => {
-      setTheme(!document.body.classList.contains('dark'));
-    });
-  </script>
-</body>
+      toggle.addEventListener('click', () => {
+        setTheme(!document.body.classList.contains('dark'));
+      });
+
+      const renderApps = (apps) => {
+        appsGrid.innerHTML = apps.map((app) => `
+          <a class="card" href="${app.url}" target="_blank" rel="noopener noreferrer">
+            <h2>${app.title}</h2>
+            <p>${app.description}</p>
+            <span class="meta">${app.label || 'Open'}</span>
+          </a>
+        `).join('');
+      };
+
+      const loadApps = async () => {
+        try {
+          const response = await fetch('apps.json');
+          if (!response.ok) throw new Error('Could not load apps.json');
+          const apps = await response.json();
+          renderApps(apps);
+        } catch (error) {
+          appsGrid.innerHTML = '<p style="color: var(--muted);">Unable to load app list. Please check apps.json.</p>';
+          console.error(error);
+        }
+      };
+
+      loadApps();
+    </script>
+  </body>
 </html>

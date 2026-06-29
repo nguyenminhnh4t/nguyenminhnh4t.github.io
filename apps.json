@@ -1,10 +1,18 @@
 [
-  {
-    "title": "Simple Automation Runner",
-    "description": "Config-driven browser task runner",
-    "url": "https://chromewebstore.google.com/detail/simple-automation-runner/gmefgpimdhaipihoobmjhkjhhhokmodc",
-    "label": "Simple Automation Runner",
-    "image": "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/extension.png",
-    "imageAlt": "Simple Automation Runner preview"
-  }
+    {
+        "title":  "Simple Automation Runner",
+        "description":  "Config-driven browser task runner",
+        "url":  "https://chromewebstore.google.com/detail/simple-automation-runner/gmefgpimdhaipihoobmjhkjhhhokmodc",
+        "label":  "Simple Automation Runner",
+        "image":  "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/extension.png",
+        "imageAlt":  "Simple Automation Runner preview"
+    },
+    {
+        "title":  "API Recorder",
+        "description":  "Side Panel API call recorder and Postman exporter",
+        "url":  "https://chromewebstore.google.com/detail/api-recorder/gdlejpflnmdfneppiibkpmajbpjbompi",
+        "label":  "API Recorder",
+        "image":  "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/api-recorder-promo.png",
+        "imageAlt":  "API Recorder Side Panel preview"
+    }
 ]

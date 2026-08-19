@@ -222,7 +222,13 @@ const renderCurrentSlide = () => {
 const goToSlide = (index) => {
   const total = appsData.length + 1;
   if (!total) return;
-  currentSlideIndex = Math.max(0, Math.min(index, total - 1));
+  const nextSlideIndex = Math.max(0, Math.min(index, total - 1));
+  if (nextSlideIndex === currentSlideIndex) {
+    setAppMenuOpen(false);
+    return;
+  }
+
+  currentSlideIndex = nextSlideIndex;
   renderCurrentSlide();
   setAppMenuOpen(false);
 };

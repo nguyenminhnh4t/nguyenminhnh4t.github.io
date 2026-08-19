@@ -14,5 +14,13 @@
         "label":  "API Recorder",
         "image":  "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/api-recorder-promo.png",
         "imageAlt":  "API Recorder Side Panel preview"
+    },
+    {
+        "title":  "Pixel Pet",
+        "description":  "A tiny animated pixel pet that wanders, plays, and reacts on every webpage",
+        "url":  "https://github.com/nguyenminhnh4t/pet/tree/main/pixel-pet-extension",
+        "label":  "Pixel Pet",
+        "image":  "https://cdn.jsdelivr.net/gh/nguyenminhnh4t/nguyenminhnh4t.github.io/public/pixel-pet-promo.png",
+        "imageAlt":  "Pixel Pet browser extension preview"
     }
 ]
